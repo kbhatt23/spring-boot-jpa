@@ -1,15 +1,20 @@
-package com.learning.springbootjpa.jdbcStyle.bean;
+package com.learning.springbootjpa.jpaBasicStyle.bean;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "footballer_jpa_basic")
 public class Footballer {
+	@Id
+	@GeneratedValue
 	private int id;
 	private String name;
-	public Footballer(int id, String name, Date birth_date) {
-		this.id = id;
+	public Footballer( String name, Date birth_date) {
 		this.name = name;
 		this.birth_date = birth_date;
 	}
