@@ -1,0 +1,91 @@
+github link for learning
+
+https://github.com/in28minutes/jpa-with-hibernate
+
+history of JPA and DB call using JDBC
+
+a.JDBC : create data source in code and create sql query and get resultset close connection
+
+b.Spring-jdbc : JDBCTemplate : we still create sql query but autoconfiguration spring boot create data soiurce connnections etc
+
+c.JPA : USing entitymanager to convert java bean to column and use ORM 
+
+d. hibernate + JPA : Extends OOB repostiory and no need of writing code of entitymanager'
+
+Types of queries:
+
+a. JPQL queries : qritten in format of entities and can be executed using entitymanager
+             - typednameQuery : a subtype of JPQL Query : qhere return type is generic to a class defined
+
+b. NamedQuery : similar to JPQL but is written in entity and a name is mentioned for reusability
+c. CriteriaQuery: written using java code
+d. NativeQueries: qritten in SQL format and can be impletmnet using @Query in jpa repository
+
+Note: JPQL is like ATG repository language. In case of atg also if we want to update more than one repo item(entity in jpa) 
+we need to have for loop.
+In nativeQuery we can do mass update also tuning commands not supported by jpa can be used in namedqueries whihc is pure SQL
+
+
+Why we need inheritance heiraches:
+-> When there are super and sublcasses involved and becuase of reusabilit we do not like common properties not to be moved out to super class.
+Types of inheritance heirachies: 
+
+a. Single table : It will have same table containnign data for all subtypes .SO data integrity will be comporomised but read peroformance will be good
+
+Example
+
+select * from EMPLOYEE_TABLE
+
+id    DiscrimatoryType_column    name    hourlywage    salary
+1       PArttimeemployee         kaka     50              null
+2       PErmamnentEmployee       kanishk   null        10000.  
+
+disadvanted:  SO data integrity will be comporomised
+advantages: good performance while reading
+
+b.  Table per class
+: For each subtype Or concrete class(make superclass as abstraxt other wise it will create a fake empty table that is not used at all) it makes a table each
+
+select * from ParttimeEmployee:
+
+id  name      hourlywage
+1     kaka    50
+
+select * from PermanentEmployee
+
+id     name       salary
+2      kanishk     10000
+
+disadvanted:  need union query and hence complexity increases, also common columns are present in all the tables(like id , name)
+advantages: seperate table for each
+
+c. Joined 
+It create a table containing columns mentioned in super class(common to all) and creates classes with foreign primary key references for each subclasses
+
+select * from EMPLOYEE_TABLE
+
+id       name    
+1        kaka    
+2         kanishk  
+
+
+
+select * from ParttimeEmployee:
+
+id     hourlywage
+1        50
+
+select * from PermanentEmployee
+
+id        salary
+2         10000
+
+
+disadvanted:  will need complex join query and hence read performance will be slower
+advantages: seperate table for each , also no common data in child columns and hence this is good for data integrity
+
+d .   mappersuperclass : it replaces entity so query will become common. It is same as one tbale per abstract class but it introduces more complexity
+but it kills entity features of class and hence can not be used in jpql
+
+
+
