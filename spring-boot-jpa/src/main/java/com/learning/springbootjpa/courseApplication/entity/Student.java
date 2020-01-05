@@ -1,10 +1,14 @@
 package com.learning.springbootjpa.courseApplication.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -26,6 +30,9 @@ public class Student {
 
 	@Column(name = "student_name" , nullable = false)
 	private String name;
+	
+	@ManyToMany(mappedBy = "students")
+	private List<Course> courses = new ArrayList<Course>();
 	
 	
 	protected Student() {
@@ -54,6 +61,12 @@ public class Student {
 	@Override
 	public String toString() {
 		return "Student [id=" + id + ", passport=" + passport + ", name=" + name + "]";
+	}
+	public List<Course> getCourses() {
+		return courses;
+	}
+	public void addCourse(Course course) {
+		this.courses.add(course);
 	}
 	
 	

@@ -1,17 +1,29 @@
 package com.learning.springbootjpa.dbInit;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.learning.springbootjpa.courseApplication.entity.Course;
 import com.learning.springbootjpa.courseApplication.entity.Passport;
+import com.learning.springbootjpa.courseApplication.entity.Review;
 import com.learning.springbootjpa.courseApplication.entity.Student;
 import com.learning.springbootjpa.courseApplication.repository.CourseEntityManagerDAO;
 import com.learning.springbootjpa.courseApplication.repository.PassportEntityManagerDAO;
 import com.learning.springbootjpa.courseApplication.repository.StudentEntityManagerDAO;
+import com.learning.springbootjpa.inheritanceStrategies.entity.Employee;
+import com.learning.springbootjpa.inheritanceStrategies.entity.PartTimeEmployee;
+import com.learning.springbootjpa.inheritanceStrategies.entity.PermanentEmployee;
+import com.learning.springbootjpa.inheritanceStrategies.repository.EmployeeRepository;
 import com.learning.springbootjpa.jdbcStyle.EmployeeJDBCDAO;
 import com.learning.springbootjpa.jdbcStyle.bean.Footballer;
 import com.learning.springbootjpa.jpaBasicStyle.FootballerJPABasicDAO;
@@ -32,6 +44,11 @@ public class CommanRunnerImpl {
 	
 	@Autowired
 	private PassportEntityManagerDAO passportRepo;
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
+	
+	
 	
 
 	@Bean
@@ -88,9 +105,47 @@ public class CommanRunnerImpl {
 					Student stu = new Student("malinga");
 					stu.setPassport(p);
 					studentRepo.createOrUpdate(stu);
+					createCourseAndStudentRelationship();
+					
+					
+					//inheritance heirachies-single table
+					
+					PermanentEmployee john = new PermanentEmployee("John", 10000D);
+					
+					PartTimeEmployee jill = new PartTimeEmployee("Jill", 50D);
+					//comented out to implment mappedusperclass
+					/*
+					 * employeeRepository.createEmployee(john);
+					 * employeeRepository.createEmployee(jill);
+					 * 
+					 * employeeRepository.findAllEmployees() .forEach(emp ->
+					 * System.out.println("Employee ka mazaq : "+emp));
+					 * 
+					 * Employee emp = employeeRepository.findEmployeeById(5);
+					 * System.out.println("ek wala employee "+emp);
+					 */
+					employeeRepository.createParttimeEmployee(jill);
+					employeeRepository.createPermanentEmployee(john);
+					
+					employeeRepository.findPartimeEmployees().forEach(emp -> System.out.println("part time all employees "+emp));
+					
+					employeeRepository.findPermanentEmployees().forEach(emp -> System.out.println("permanent time all employees "+emp));
+					
 				}
 			}
 			
 		};
+	}
+	
+	@Transactional
+	public void createCourseAndStudentRelationship() {
+		Student newstu = new Student("radhav");
+		studentRepo.createOrUpdate(newstu);
+		Course course = new Course("Spring Cloud Kubernetes");
+		repoCourse.createOrUpdate(course);
+		newstu.addCourse(course);
+		course.addStudents(newstu);
+		repoCourse.createOrUpdate(course);
+		
 	}
 }

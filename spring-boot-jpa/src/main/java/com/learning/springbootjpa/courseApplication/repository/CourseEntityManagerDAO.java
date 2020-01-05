@@ -41,6 +41,7 @@ public class CourseEntityManagerDAO {
 		logger.info("started playing with entitymanager");
 		
 		Course course = new Course("react js for java developer");
+		
 		em.persist(course);
 		em.flush();
 		//em.clear();
@@ -50,8 +51,8 @@ public class CourseEntityManagerDAO {
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
 		
-		Course cUpdate = findCourseById(5);
-		cUpdate.setCourseName("updated react js");
+		//Course cUpdate = findCourseById(5);
+		//cUpdate.setCourseName("updated react js");
 		
 	}
 }

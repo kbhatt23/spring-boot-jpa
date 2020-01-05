@@ -30,6 +30,30 @@ values(7000,'kanishk',5000);
 insert into student (id,student_name,passport_id)
 values(6999,'ricardo',5001);
 
+insert into course (course_id,course_name,creation_date,last_modified_date)
+values(4000,'spring boot',sysdate(),sysdate());
+
+insert into course (course_id,course_name,creation_date,last_modified_date)
+values(4001,'spring cloud',sysdate(),sysdate());
+
+insert into review (id,rating,comment,course_id)
+values(3000,'5','One of the Best course available online' ,4000 );
+
+insert into review (id,rating,comment,course_id)
+values(3001,'4','Great for beginners but not enough for experts' ,4000 );
+
+insert into course_student_join_table (course_join_id,student_join_id)
+values(4000,6999 );
+insert into course_student_join_table (course_join_id,student_join_id)
+values(4000,7000 );
+insert into course_student_join_table (course_join_id,student_join_id)
+values(4001,6999 );
+insert into course_student_join_table (course_join_id,student_join_id)
+values(4001,7000 );
+
+
+
+
 
 
 
