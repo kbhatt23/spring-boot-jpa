@@ -19,16 +19,17 @@ import com.learning.springbootjpa.jpaBasicStyle.bean.Footballer;
 import com.learning.springbootjpa.SpringBootJpaApplication;
 import com.learning.springbootjpa.courseApplication.entity.Course;
 import com.learning.springbootjpa.courseApplication.entity.Passport;
+import com.learning.springbootjpa.courseApplication.entity.Review;
 import com.learning.springbootjpa.courseApplication.entity.Student;
 import com.learning.springbootjpa.jpaBasicStyle.FootballerJPABasicDAO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=SpringBootJpaApplication.class)
-public class StudentEntityManagerDAOTest {
+public class ReviewJPARepositryTest {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	StudentEntityManagerDAO repo;
+	ReviewRepository reviewRepo;
 	
 	@Test
 	//roll back after function test
@@ -36,25 +37,29 @@ public class StudentEntityManagerDAOTest {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void testOneToOneRelatioship() {
 		
-		logger.info("starting testing one to onerelation");
+		logger.info("starting testing review repository");
 		
-		Student stu = repo.findStudentById(7000);
-		logger.info("student data "+ stu);
-		Passport pass = stu.getPassport();
-		logger.info("passport data "+pass);
+		reviewRepo.findReviewByRating("4")
+			.forEach(e -> System.out.println("rating ka item "+e));
 		
-		Student stu1 = repo.findStudentById(6999);
-		System.out.println("pehla wala nikal aya "+stu1.getName());
+		//testing the first level cache concept
+		logger.info("starting sachayi ki shuruat");
+		Review r1 = reviewRepo.findById(3003).orElseThrow(RuntimeException::new);
+		logger.info("First review fetched "+r1);
+		Review r2 = reviewRepo.findById(3003).orElseThrow(RuntimeException::new);
 		
-		testcreationToOneRelatioship();
+		
+		logger.info("Second review fetched "+r2);
+		fetchReviewInThirTransaction();
+	}
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void fetchReviewInThirTransaction() {
+		logger.info("third review fetched ki shuruat ");
+		
+		Review r3 = reviewRepo.findById(3003).orElseThrow(RuntimeException::new);
+		logger.info("third review fetched "+r3);
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void testcreationToOneRelatioship() {
-		System.out.println("doosre ki shuruat");
-		Student stu1 = repo.findStudentById(6999);
-		System.out.println("doosra wala nikal aya "+stu1.getName());
-	}
 	
 
 

@@ -88,4 +88,36 @@ d .   mappersuperclass : it replaces entity so query will become common. It is s
 but it kills entity features of class and hence can not be used in jpql
 
 
+DB ACID Properties
+A : Atomicity: It means that either all steps of manipulation in data is success or all is lost. Done using transactions 
+	In a transaction if in step 2 exception occurred step 1 is rolled back. In spring boot this si done using lazy commit which happens
+	once the function containing @transactional ends
 
+C: Consistency: Data should remain consistent whether transaction was succesful or not
+I : Isloation : This is done using isloation strategy of trnsaction. It means if one transaction is in progress then how much data to show if another transaction is taking the data
+
+D : Durability. This si done using dmp file auto creation . IT is to ahndle disaster revovery
+
+
+Issues in isolation strategy:
+a. Dirty reads: It happens when data modified in one transaction is read by another parallel transaction even before first transaction ended:
+
+eg: A (200)  B (400)  C(300)
+Task to do - transfer 100 from A to B -> step1 deduct 100 from A , step2 credit 100 to B
+           - transfer 50 from A to C -> step1 deduct 50 from A ,step2 credit 50 to C
+           
+       issue steps : Transaction 1 starts -> step 1 is done -> transaction2  starts -> step 1 read half data from trnasaction1 -> step 2 of tran2 credits to C -> step2 of transction1 have exception
+
+
+Non repeatable read: It happens when in step 1 of trnsaction1 we do selct * from student wher id=10 -> Transaction 2 starts and modify update age=23 where id=10 -> transac1 again read same id 
+
+Phanthom Read; Steps to make it happen : 
+	Transaction1 -> select * from where aga between 20-20  -> Transaqcion2 : insert row age 26 -> transcfion1 agaion step oe is repeated and it gives one more row(in delete case of t2 could be lesser)
+	
+
+	
+	
+Types of cache:
+First level cache : Within the individual transaction. Each transcation has its own persistence context each store individual cache
+It works only if @transactional is there and it works in another new transactiont hen cachce do not work as it is having different persistentcontext
+Second lvel cache: Common things are stroed in second level cache

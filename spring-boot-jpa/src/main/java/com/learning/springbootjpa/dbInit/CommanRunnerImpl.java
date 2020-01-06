@@ -28,7 +28,7 @@ import com.learning.springbootjpa.jdbcStyle.EmployeeJDBCDAO;
 import com.learning.springbootjpa.jdbcStyle.bean.Footballer;
 import com.learning.springbootjpa.jpaBasicStyle.FootballerJPABasicDAO;
 
-@Configuration
+//@Configuration
 public class CommanRunnerImpl {
 	@Autowired
 	private EmployeeJDBCDAO repo;
@@ -51,7 +51,7 @@ public class CommanRunnerImpl {
 	
 	
 
-	@Bean
+	//@Bean
 	public CommandLineRunner commandLineRunner() {
 		return new CommandLineRunner() {
 			
