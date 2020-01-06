@@ -1,6 +1,7 @@
 package com.learning.springbootjpa.dbInit;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.learning.springbootjpa.courseApplication.repository.CourseEntityManag
 import com.learning.springbootjpa.courseApplication.repository.PassportEntityManagerDAO;
 import com.learning.springbootjpa.courseApplication.repository.ReviewRepository;
 import com.learning.springbootjpa.courseApplication.repository.StudentEntityManagerDAO;
+import com.learning.springbootjpa.courseApplication.service.CacheEntityService;
 import com.learning.springbootjpa.inheritanceStrategies.entity.Employee;
 import com.learning.springbootjpa.inheritanceStrategies.entity.PartTimeEmployee;
 import com.learning.springbootjpa.inheritanceStrategies.entity.PermanentEmployee;
@@ -55,6 +57,9 @@ public class CommanRunnerImplPropagationStrategies {
 	@Autowired
 	ReviewRepository reviewRepo;
 	
+	@Autowired
+	private CacheEntityService cacheEntityService;
+	
 	
 	
 
@@ -64,11 +69,25 @@ public class CommanRunnerImplPropagationStrategies {
 			
 			@Override
 			public void run(String... args) throws Exception {
-				System.out.println("naye game pro[pagation ki shurat");
-				createTwoReviews();
+				//System.out.println("naye game pro[pagation ki shurat");
+				//createTwoReviews();
+				callCacheService();
 				
+				callCacheService();
 			}
 
+			private void callCacheService() {
+				long start = Calendar.getInstance().getTimeInMillis();
+				System.out.println("cache entity ki shuruat");
+				cacheEntityService.fetchALLCaheEntity()
+				.stream()
+				.forEach(e -> System.out.println("cahce Entity item name "+e.getName()));
+				
+				long end = Calendar.getInstance().getTimeInMillis() -start;
+				System.out.println("cache entity ka ant with time "+end);
+			}
+
+			
 			
 
 			
