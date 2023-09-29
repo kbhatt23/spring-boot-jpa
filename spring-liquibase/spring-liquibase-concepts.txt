@@ -1,0 +1,129 @@
+om shree ganeshaya namah
+om shree sita rama lakshman hanuman
+
+- Database developers need to define complex tables and schemas and then write complex sql and procedures
+  there are multiple dbs like oracle db, microsoft server, mysql, postgresql etc
+  the SQL will be different for each sql provider as there is difference in dialects
+  if we migrate from one sql to another sql db even sql scripts has to be modified
+  liquibase comes in between as another abstraction layer to solve this
+
+- Another scenario in which liquibase helps is databse upgrades
+
+- Migrating from databse developer to web application back end developer leads to new perspective
+  two ways to handle sql
+  a. commit sql files in a directory and based on release those will be executed before code deployment
+  b. lets create a tool that automatically searches directory and execute the sql scripts
+     but this one has complexities like if i have to skip few sql and run others
+
+- Nowadays sql scripts are created by back end developers and it is a hated subject
+  So as a back end developer we must know how to execute sql efficiently with automation
+
+- Steps to learn liquibase
+a. Install and Configure liquibase
+b. learn databse versioning concepts
+c. liquibase databse schema structure using xml
+d. integrate with spring boot and h2/mysql : liquibase automatically creates sql in database:
+    -> whatever be the dialect of sql database provider  
+e. rollback databse changes
+f. Generate sql scripts fro commit and rollback scenarios both
+g. tag a database version for easier rollback
+
+om shree ganeshaya namah
+om shree sita rama lakshman hanuman
+
+- liquibase supports various file formats to support databse scheme definition
+  xml, yaml, sql (specially formatted), json
+  
+- liquibase uses changeset xml tags to identify if sql needs to be updated in db
+  it stores data in table DATABASECHANGELOG where id is the change set name and it has other details
+  like author and other things
+  everytime we run the liquibase command it checks if that changes entry already exist in this table
+  if exist in this table means it is already executed and hence it goes to next changeset tag in xml
+  
+- End goal  of development is to go live in production environment
+  dev,qa,staging etc are just to ensure safe deploment to production
+  does that mean dev environment is safe : no
+  in dev environment lets say 5 developers are shared
+  each running their own feature branch and using shared database
+  if one create new table/ modify table and modify code locally : need to update sql in shared db
+  this can break other developers task: what if he needs to work on urgent production issue:
+  which require old database structure and he needs to manually work in rolling back sql run by other developer
+
+- The above issue can be fixed bu using h2 in memory db
+  each developer can use its own in memory db which starts at server startup and rollsback on exit
+  this way multiple developer can use same environment but its own d.b and hence no collision due to db sharing
+- One might think that running the liquibase command externally to create tables will be tedious
+  correct but we can have liquibase starter dependency in spring boot and it will take care of that automatically on server startup  
+  
+- We can have different profile : like in local profile we can also insert data
+  hence using liquibase configuration in application.properties or application.yml
+  we can have different changeset.xml file and path
+  in one we can have sample data and in other we can have no sample data
+- also in one changelog file we can include another change log
+  this way in application.properties config we can set single file and that actually can run other files as well
+  so we can segregate the xml in multiple files
+
+- In persistence db like mysql we can do rollback using liquibase for easier maintainance
+  we can use liquibase command but with rollback option and provide number of rollback count to do
+  if we give 2 , last 2 change sets will be rolled back
+  remember rollback happens from bottom that is in reverse order in which it was actually executed from changelog xml file  
+  
+- in liquibase not all operations are auto rollback supported
+  eg: alter table add column is rollback supported in mysql, but insert table is not supported for rollback
+  for such cases in changelog.xml file we can have rollback tag also added  
+  
+- on every rollback command in liquibase we can attach a tag, that will be shown in table DATABASECHANGELOG
+  similar to rollback even in update command of liquibase we can pass the number of changesets
+  so if we have 3 change sets and in update liquibase command pass 2 it will run upto 5th change set in xml file
+  now using tag we can rollback to that tag version and need not to know the count
+  hence in each change set we can have a tag and we can rollback to that specific tag
+  we can also rollback to a specific timestamp
+  eg: if we knew exactly till when db state was working fine, i can rollback to that specific time or if tag exist to taht tag
+  can rollback to both specific tag or specific timestamp  
+  
+- In some companies DBA will enforce only SQL script to run on production
+  the DBA might reject running unkown liquibase commands using readable xml file
+  even though liquibase provides human readable formats of change sets DBA might decline running liquibase commands
+  we can easily generate SQL scripts/roll back scripts from change set xml file and DATABASECHANGELOG table using liquibase  
+  
+- If we have a legacy project which is very old and have huge table sql structures already written with old tool
+  and we want to use liquibase in this project we can still do it
+
+- Approaches:
+a. ignore the history of changeset until now and start fresh
+   create a changeLog.xml and in that add only new sql modifications
+   and to start with the changelog table will have empty set
+   in short it is easiest approah to just ignore the old data to be versioned by liquibase
+   just start fresh and all versioning concepts/rollback/update etc will be started from now onwards
+   
+b. approach second is more complex
+   this require even the older sql to become part of history in changelog table of liquibase
+   we can do it manually by creating the xml manually but that is very tedious
+   however inside <changeset> tag we have <sql> tag there we can add these sql one by one
+   for each sql we can have one changeset
+   this way it will be added to historical data of changelog table that liquibase uses
+   however if we run the update command in liquibase binary it will give error
+   as tables already exist, so instead of update we need to give changeLogSync command
+   this will only add the historical data and wont actually create real sql
+c. let liquibase create the changeset xml file on its own
+   just pass all the sql to it and run liquibase binary by command generateChangeLog
+   using this command however it wont create xml for triggers, procedures etc in free version
+  for that use pro version that is paid or generate these yourself
+  
+om shree ganeshaya namah
+om shree sita rama lakshman hanuman
+
+- liquibase provides command dropAll : that removes all the table
+  this way no need to write sql to delete all tables in the schema
+  
+- best practices
+a. never ever modify any existing changeset in xml that has been already applied
+   it is because while applying one changeset , liquibase creates a checksum and store in DATABASECHANGELOG;
+   and if we modify the changeset in xml after it is already beeing applied, like adding a new column
+   the new checksum wont match with that present in the table DATABASECHANGELOG;
+   hence liquibaseil throw an error
+b. Better to create new changeset for each change:
+   basically one changeset can be rolledback or upgraded togehter as a group
+  so inside a changeset always keep actions that either happens or rollbacks at once and no issue happens
+How the problem with a changed checksum can be solved?
+maually run the sql -> set checksum as null -> update command in liquibase -> itupdates the new checksum in table DATABASECHANGELOG   

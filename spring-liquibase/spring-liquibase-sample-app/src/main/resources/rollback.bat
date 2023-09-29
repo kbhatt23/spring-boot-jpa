@@ -1,0 +1,1 @@
+liquibase --driver=com.mysql.jdbc.Driver --classpath="C:\Users\kanis\.m2\repository\mysql\mysql-connector-java\8.0.28\mysql-connector-java-8.0.28.jar" --changeLogFile=db-changelog.xml --url="jdbc:mysql://localhost:3306/liquibase-db" --username=liquibase-user --password=liquibaseusersecret rollbackCount 1

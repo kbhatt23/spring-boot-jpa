@@ -1,0 +1,22 @@
+version: "3"
+services:
+ mysql:
+    image: "mysql:5.7"
+    container_name: "mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: liquibaserootsecret
+      MYSQL_USER: liquibase-user
+      MYSQL_PASSWORD: liquibaseusersecret
+      MYSQL_DATABASE: liquibase-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - 'mysql_data:/var/lib/mysql'
+    networks:
+      - db-network
+      
+networks:
+  db-network:
+
+volumes:
+  mysql_data:      
